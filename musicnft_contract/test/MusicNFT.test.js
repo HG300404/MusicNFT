@@ -254,4 +254,138 @@ describe("MusicNFT Contract", function () {
             expect(await musicNFT.supportsInterface("0x2a55205a")).to.be.true;
         });
     });
+
+    describe("ERC721Enumerable", function () {
+        const tokenURI = "ipfs://QmTestHash123";
+
+        it("Should return correct total supply", async function () {
+            expect(await musicNFT.totalSupply()).to.equal(0);
+
+            await musicNFT.connect(user1).mintMusic(
+                user1.address,
+                tokenURI,
+                user1.address,
+                ROYALTY_FEE,
+                { value: MINT_PRICE }
+            );
+
+            expect(await musicNFT.totalSupply()).to.equal(1);
+
+            await musicNFT.connect(user2).mintMusic(
+                user2.address,
+                tokenURI,
+                user2.address,
+                ROYALTY_FEE,
+                { value: MINT_PRICE }
+            );
+
+            expect(await musicNFT.totalSupply()).to.equal(2);
+        });
+
+        it("Should return token by index", async function () {
+            await musicNFT.connect(user1).mintMusic(
+                user1.address,
+                tokenURI,
+                user1.address,
+                ROYALTY_FEE,
+                { value: MINT_PRICE }
+            );
+
+            await musicNFT.connect(user2).mintMusic(
+                user2.address,
+                tokenURI,
+                user2.address,
+                ROYALTY_FEE,
+                { value: MINT_PRICE }
+            );
+
+            expect(await musicNFT.tokenByIndex(0)).to.equal(1);
+            expect(await musicNFT.tokenByIndex(1)).to.equal(2);
+        });
+
+        it("Should return token of owner by index", async function () {
+            // Mint 2 NFTs for user1
+            await musicNFT.connect(user1).mintMusic(
+                user1.address,
+                tokenURI,
+                user1.address,
+                ROYALTY_FEE,
+                { value: MINT_PRICE }
+            );
+
+            await musicNFT.connect(user1).mintMusic(
+                user1.address,
+                tokenURI + "2",
+                user1.address,
+                ROYALTY_FEE,
+                { value: MINT_PRICE }
+            );
+
+            // Mint 1 NFT for user2
+            await musicNFT.connect(user2).mintMusic(
+                user2.address,
+                tokenURI + "3",
+                user2.address,
+                ROYALTY_FEE,
+                { value: MINT_PRICE }
+            );
+
+            // Check user1 has 2 NFTs
+            expect(await musicNFT.balanceOf(user1.address)).to.equal(2);
+            expect(await musicNFT.tokenOfOwnerByIndex(user1.address, 0)).to.equal(1);
+            expect(await musicNFT.tokenOfOwnerByIndex(user1.address, 1)).to.equal(2);
+
+            // Check user2 has 1 NFT
+            expect(await musicNFT.balanceOf(user2.address)).to.equal(1);
+            expect(await musicNFT.tokenOfOwnerByIndex(user2.address, 0)).to.equal(3);
+        });
+
+        it("Should update enumeration after transfer", async function () {
+            // Mint NFT for user1
+            await musicNFT.connect(user1).mintMusic(
+                user1.address,
+                tokenURI,
+                user1.address,
+                ROYALTY_FEE,
+                { value: MINT_PRICE }
+            );
+
+            expect(await musicNFT.balanceOf(user1.address)).to.equal(1);
+            expect(await musicNFT.balanceOf(user2.address)).to.equal(0);
+
+            // Transfer to user2
+            await musicNFT.connect(user1).transferFrom(
+                user1.address,
+                user2.address,
+                1
+            );
+
+            // Check balances updated
+            expect(await musicNFT.balanceOf(user1.address)).to.equal(0);
+            expect(await musicNFT.balanceOf(user2.address)).to.equal(1);
+
+            // Check user2 can query their NFT
+            expect(await musicNFT.tokenOfOwnerByIndex(user2.address, 0)).to.equal(1);
+        });
+
+        it("Should revert when querying out of bounds index", async function () {
+            await musicNFT.connect(user1).mintMusic(
+                user1.address,
+                tokenURI,
+                user1.address,
+                ROYALTY_FEE,
+                { value: MINT_PRICE }
+            );
+
+            // Should revert when index >= balance
+            await expect(
+                musicNFT.tokenOfOwnerByIndex(user1.address, 1)
+            ).to.be.reverted;
+
+            // Should revert when querying user with no NFTs
+            await expect(
+                musicNFT.tokenOfOwnerByIndex(user2.address, 0)
+            ).to.be.reverted;
+        });
+    });
 });

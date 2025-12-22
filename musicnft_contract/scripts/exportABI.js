@@ -184,6 +184,34 @@ Lấy thông tin royalty cho token (EIP-2981).
   writeFileSync(readmePath, readmeContent);
   console.log(`✅ Created: ${readmePath}`);
 
+  // === Auto-copy to Frontend ===
+  console.log("\n=== Auto-copying to Frontend ===");
+
+  const frontendLibPath = join(process.cwd(), "..", "music_nft_front_end", "lib");
+
+  try {
+    // Kiểm tra xem frontend lib folder có tồn tại không
+    await import("fs/promises").then(async (fs) => {
+      try {
+        await fs.access(frontendLibPath);
+
+        // Copy MusicNFT.json
+        const sourceFile = join(frontendDir, "MusicNFT.json");
+        const destFile = join(frontendLibPath, "MusicNFT.json");
+        await fs.copyFile(sourceFile, destFile);
+        console.log(`✅ Copied: ${destFile}`);
+
+        console.log("\n🎉 Files automatically copied to frontend!");
+      } catch (error) {
+        console.log(`⚠️  Frontend folder not found at: ${frontendLibPath}`);
+        console.log("   You can manually copy files from frontend/ folder");
+      }
+    });
+  } catch (error) {
+    console.log("⚠️  Could not auto-copy to frontend");
+    console.log("   You can manually run: cp frontend/MusicNFT.json ../music_nft_front_end/lib/");
+  }
+
   console.log("\n=== Summary ===");
   console.log("Contract Address:", deploymentInfo.contractAddress);
   console.log("Network:", deploymentInfo.network);

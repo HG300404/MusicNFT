@@ -2,13 +2,13 @@
 
 ## Contract Address
 ```
-0x8E65aEe95f6B0249eAD4A4847E5e398551C97D52
+0xbbA15182FF395Af1756d762A5001B2f07631f575
 ```
 
 ## Network
 - **Network**: Sepolia Testnet
 - **Chain ID**: 11155111
-- **Explorer**: https://sepolia.etherscan.io/address/0x8E65aEe95f6B0249eAD4A4847E5e398551C97D52
+- **Explorer**: https://sepolia.etherscan.io/address/0xbbA15182FF395Af1756d762A5001B2f07631f575
 
 ## Files
 - `MusicNFT.json`: Full contract info (ABI + address + metadata)
