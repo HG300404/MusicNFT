@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
       success: true,
       musicUrl: ipfsData.trackUrl,
       coverUrl: ipfsData.coverUrl,
-      metadataUri: ipfsData.tokenURI,
+      metadataUri: ipfsData.metadataUri || ipfsData.tokenURI, // Read metadataUri first, fallback to tokenURI
       folderCid: ipfsData.folderCid,
       gatewayUrl: ipfsData.gatewayUrl,
       tokenURIGateway: ipfsData.tokenURIGateway,

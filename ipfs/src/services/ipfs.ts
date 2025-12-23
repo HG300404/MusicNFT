@@ -50,7 +50,8 @@ export class IPFSService {
       this.client = await Client.create();
 
       // Check if already logged in (has spaces)
-      const spaces = this.client.spaces();
+      const spacesIterator = this.client.spaces();
+      const spaces = Array.from(spacesIterator);
 
       if (spaces.length === 0) {
         // Need to login
@@ -68,7 +69,8 @@ export class IPFSService {
         await this.client.login(email);
 
         // After login, check for spaces again
-        const spacesAfterLogin = this.client.spaces();
+        const spacesAfterLoginIterator = this.client.spaces();
+        const spacesAfterLogin = Array.from(spacesAfterLoginIterator);
         if (spacesAfterLogin.length === 0) {
           // Create a default space
           console.log("[IPFSService] Creating default space...");
@@ -78,10 +80,11 @@ export class IPFSService {
 
       // Set current space if not set
       if (!this.client.currentSpace()) {
-        const spaces = this.client.spaces();
-        if (spaces.length > 0) {
-          await this.client.setCurrentSpace(spaces[0].did());
-          console.log(`[IPFSService] Using space: ${spaces[0].name()}`);
+        const spacesIterator2 = this.client.spaces();
+        const spaces2 = Array.from(spacesIterator2);
+        if (spaces2.length > 0) {
+          await this.client.setCurrentSpace(spaces2[0].did());
+          console.log(`[IPFSService] Using space: ${spaces2[0].did()}`);
         }
       }
 
@@ -582,8 +585,8 @@ export class IPFSService {
         const metadata = {
           name: musicName,
           description: prompt,
-          image: coverFileName,
-          music: trackFileName,
+          image: `ipfs://${folderResult.folderCid}/${coverFileName}`,
+          music: `ipfs://${folderResult.folderCid}/${trackFileName}`,
           external_url: finalExternalUrl,
           attributes: [
             {

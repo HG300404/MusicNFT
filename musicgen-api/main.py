@@ -69,14 +69,19 @@ img_device = "cuda" if torch.cuda.is_available() else "cpu"
 img_dtype = torch.float16 if img_device == "cuda" else torch.float32
 
 try:
-    img_pipe = StableDiffusionPipeline.from_pretrained(IMG_MODEL_ID, torch_dtype=img_dtype)
+    img_pipe = StableDiffusionPipeline.from_pretrained(
+        IMG_MODEL_ID, 
+        torch_dtype=img_dtype,
+        safety_checker=None,  # Tắt safety checker để tránh ảnh đen
+        requires_safety_checker=False
+    )
     img_pipe = img_pipe.to(img_device)
 
     # tiết kiệm RAM trên GPU (nếu có)
     if img_device == "cuda":
         img_pipe.enable_attention_slicing()
 
-    print("Image model loaded successfully")
+    print("Image model loaded successfully (safety checker disabled)")
 except Exception as e:
     img_pipe = None
     print("Failed to load image model:", e)

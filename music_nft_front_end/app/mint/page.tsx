@@ -11,8 +11,13 @@ import { useToast } from '@/components/ui/use-toast'
 import { mintNFT } from '@/lib/contract'
 
 interface PendingMint {
-  musicUrl: string
-  coverUrl: string
+  musicUrlLocal?: string
+  coverUrlLocal?: string
+  musicUrlIpfs?: string
+  coverUrlIpfs?: string
+  // Legacy support
+  musicUrl?: string
+  coverUrl?: string
   metadataUri: string
   prompt: string
 }
@@ -146,11 +151,17 @@ export default function MintPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {pendingMint.coverUrl && (
+              {(pendingMint.coverUrlLocal || pendingMint.coverUrl) && (
                 <img
-                  src={pendingMint.coverUrl}
+                  src={pendingMint.coverUrlLocal || pendingMint.coverUrl}
                   alt="Cover"
                   className="w-full rounded-lg"
+                  onError={(e) => {
+                    // Fallback to IPFS if local fails
+                    if (pendingMint.coverUrlIpfs && e.currentTarget.src !== pendingMint.coverUrlIpfs) {
+                      e.currentTarget.src = pendingMint.coverUrlIpfs
+                    }
+                  }}
                 />
               )}
 
@@ -159,11 +170,14 @@ export default function MintPage() {
                 <p className="text-gray-600">{pendingMint.prompt}</p>
               </div>
 
-              {pendingMint.musicUrl && (
+              {(pendingMint.musicUrlLocal || pendingMint.musicUrl) && (
                 <div>
                   <h3 className="font-semibold mb-2">Nhạc:</h3>
                   <audio controls className="w-full">
-                    <source src={pendingMint.musicUrl} type="audio/mpeg" />
+                    <source src={pendingMint.musicUrlLocal || pendingMint.musicUrl} type="audio/wav" />
+                    {pendingMint.musicUrlIpfs && (
+                      <source src={pendingMint.musicUrlIpfs} type="audio/mpeg" />
+                    )}
                     Trình duyệt của bạn không hỗ trợ audio.
                   </audio>
                 </div>

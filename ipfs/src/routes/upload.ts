@@ -346,7 +346,8 @@ router.post(
         // Add tokenURI to response (for NFT minting)
         const responseWithTokenURI = {
           ...result,
-          tokenURI: result.metadataUrl, // ipfs://{CID}/metadata.json
+          metadataUri: result.metadataUrl, // ipfs://{CID}/metadata.json - for frontend
+          tokenURI: result.metadataUrl, // ipfs://{CID}/metadata.json - backward compatible
           tokenURIGateway: result.metadataUrl.replace('ipfs://', 'https://w3s.link/ipfs/')
         };
 

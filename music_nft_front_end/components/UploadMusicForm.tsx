@@ -114,7 +114,7 @@ export function UploadMusicForm() {
                 progress: 100,
                 musicUrl: ipfsToGateway(data.trackUrl),
                 coverUrl: ipfsToGateway(data.coverUrl),
-                metadataUri: data.tokenURI,
+                metadataUri: data.metadataUri || data.tokenURI, // Read metadataUri first, fallback to tokenURI
                 folderCid: data.folderCid,
                 gatewayUrl: data.gatewayUrl,
                 tokenURIGateway: data.tokenURIGateway,
@@ -124,7 +124,7 @@ export function UploadMusicForm() {
             localStorage.setItem('pendingMint', JSON.stringify({
                 musicUrl: ipfsToGateway(data.trackUrl),
                 coverUrl: ipfsToGateway(data.coverUrl),
-                metadataUri: data.tokenURI,
+                metadataUri: data.metadataUri || data.tokenURI, // Read metadataUri first, fallback to tokenURI
                 name: musicName.trim(),
                 artist: artist.trim() || 'Unknown Artist',
             }))

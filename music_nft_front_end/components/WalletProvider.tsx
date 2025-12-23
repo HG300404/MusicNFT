@@ -33,13 +33,24 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       }
       checkConnection()
 
+      // Listen for account changes
       window.ethereum.on('accountsChanged', (accounts: string[]) => {
         if (accounts.length > 0) {
           setAccount(accounts[0])
+          // Recreate provider when account changes
+          const newProvider = new ethers.BrowserProvider(window.ethereum)
+          setProvider(newProvider)
         } else {
           setAccount(null)
           setProvider(null)
         }
+      })
+
+      // Listen for network/chain changes
+      window.ethereum.on('chainChanged', (chainId: string) => {
+        console.log('🔄 Network changed to chain ID:', chainId)
+        // Reload the page when network changes to ensure clean state
+        window.location.reload()
       })
     }
   }, [])
